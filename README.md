@@ -2,11 +2,11 @@
 
 **Version 2.1.0 (revised package).** The Risk Mechanism Theory Index (RMTI) provides a single, decision-ready risk score:
 
-\[\mathbf{R = L \cdot E \cdot V \cdot (1 - \rho)}\]
+R = L x E x V x (1 - p)
 
 It features an Expected Annual Loss severity layer:
 
-\[\mathbf{EAL = L \cdot C \cdot (1 - \rho)}\]
+EAL = L x C x (1 - p)
 
 The index is implemented four ways: two interactive web sandboxes, one Python reference package, and one Excel workbook.
 
