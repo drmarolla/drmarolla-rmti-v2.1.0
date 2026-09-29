@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rmti"
+version = "2.1.0"
+description = "Risk Mechanism Theory Index (RMTI) — reference implementation"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Cesar Marolla", email = "cesar.marolla@alumni.harvard.edu" }
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/drmarolla/Risk-Mechanism-Theory-Index-RMTI-"
+Zenodo = "https://doi.org/10.5281/zenodo.21445892"
+
+[tool.setuptools]
+py-modules = []
+packages = ["core", "disaster_climate", "oncology"]

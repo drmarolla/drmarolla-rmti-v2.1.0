@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RMTI Sandbox — Oncology &amp; Public Health Surveillance · Risk Mechanism Theory Index Calculator</title>
+<meta name="description" content="Interactive companion calculator for the Risk Mechanism Theory Index (RMTI) — oncology (HCC) and public health surveillance — Cesar Marolla.">
+<style>
+  :root{
+    --ink:#182420;
+    --forest:#1c4b3a;
+    --forest-dark:#123128;
+    --terracotta:#c1502f;
+    --gold:#c99a2e;
+    --cream:#f6f4ee;
+    --paper:#ffffff;
+    --panel:#eef1ea;
+    --line:#dbd8cb;
+    --muted:#5c6b62;
+    --sage:#6f9c78;
+    --orange:#d9822f;
+    --maroon:#7a2419;
+    --radius:14px;
+    /* System font stacks — no network request, so the page renders
+       identically online or fully offline. Each stack leads with the
+       modern CSS keyword (system-ui / ui-serif / ui-monospace) and falls
+       back to widely pre-installed faces that approximate the original
+       Inter / Source Serif 4 / IBM Plex Mono choices. */
+    --font-sans: system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --font-serif: ui-serif,Georgia,Cambria,'Times New Roman',Times,serif;
+    --font-mono: ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px;}
+
+  /* ---------- Header ---------- */
+  header{padding:6px 0 22px;border-bottom:1px solid var(--line);margin-bottom:22px;}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--forest);font-weight:600;margin-bottom:10px;
+  }
+  h1{
+    font-family:var(--font-serif);
+    font-weight:700;font-size:clamp(28px,4.4vw,42px);
+    margin:0 0 10px;color:var(--forest-dark);letter-spacing:-.01em;
+  }
+  header p.lede{max-width:640px;color:var(--muted);font-size:15.5px;margin:0;}
+  header .byline{margin-top:14px;font-size:13px;color:var(--muted);}
+  header .byline b{color:var(--ink);}
+
+  /* ---------- Domain tabs ---------- */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .tab{
+    font-family:var(--font-sans);font-size:13.5px;font-weight:600;
+    padding:9px 16px;border-radius:999px;border:1px solid var(--line);
+    background:var(--paper);color:var(--muted);cursor:pointer;
+    transition:all .15s ease;
+  }
+  .tab:hover{border-color:var(--forest);color:var(--forest);}
+  .tab.active{background:var(--forest);border-color:var(--forest);color:#fff;}
+
+  .domain-note{font-size:13px;color:var(--muted);margin:0 0 18px;max-width:680px;}
+
+  /* ---------- Example chips ---------- */
+  .examples-label{font-size:12px;font-weight:600;color:var(--muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:.04em;}
+  .examples-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:14px;margin-bottom:6px;}
+  .example-chip{
+    flex:0 0 auto;font-family:var(--font-mono);font-size:12px;
+    padding:8px 12px;border-radius:9px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);cursor:pointer;white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .example-chip:hover{border-color:var(--terracotta);color:var(--terracotta);}
+  .example-chip.demo{border-style:dashed;}
+
+  /* ---------- Grid layout ---------- */
+  .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;margin-top:6px;}
+  @media (max-width:820px){.grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 22px 24px;
+  }
+  .card h2{
+    font-family:var(--font-serif);font-size:18px;margin:0 0 16px;
+    color:var(--forest-dark);font-weight:600;
+  }
+
+  /* ---------- Sliders ---------- */
+  .field{margin-bottom:18px;}
+  .field:last-child{margin-bottom:0;}
+  .field-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:10px;}
+  .field-top label{font-size:13.5px;font-weight:600;color:var(--ink);}
+  .field-top .val{font-family:var(--font-mono);font-size:13px;color:var(--forest);font-weight:600;min-width:42px;text-align:right;}
+  .field-sub{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  input[type=range]{
+    -webkit-appearance:none;width:100%;height:6px;border-radius:4px;
+    background:linear-gradient(to right, var(--forest) 0%, var(--forest) var(--pct,50%), var(--panel) var(--pct,50%), var(--panel) 100%);
+    outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--paper);border:3px solid var(--forest);cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,.25);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:18px;height:18px;border-radius:50%;background:var(--paper);
+    border:3px solid var(--forest);cursor:pointer;
+  }
+
+  .divider{border-top:1px dashed var(--line);margin:20px 0;padding-top:18px;}
+  .compare-toggle{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;margin-bottom:14px;cursor:pointer;user-select:none;}
+  .compare-toggle input{width:16px;height:16px;accent-color:var(--forest);}
+
+  .cbtns{display:flex;gap:6px;flex-wrap:wrap;}
+  .cbtn{
+    flex:1 1 auto;min-width:60px;font-size:11px;text-align:center;
+    padding:8px 6px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel);color:var(--muted);cursor:pointer;font-weight:600;
+    line-height:1.25;
+  }
+  .cbtn.active{background:var(--gold);border-color:var(--gold);color:#3a2c05;}
+
+  .pop-row{display:flex;gap:8px;margin-top:8px;}
+  .pop-row input[type=number]{
+    flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+    font-family:var(--font-mono);font-size:13px;
+  }
+  .pop-row button{
+    font-size:11.5px;font-weight:600;padding:8px 12px;border-radius:8px;
+    border:1px solid var(--forest);background:var(--paper);color:var(--forest);
+    cursor:pointer;white-space:nowrap;
+  }
+  .pop-row button:hover{background:var(--forest);color:#fff;}
+
+  /* ---------- Results ---------- */
+  .score-block{display:flex;align-items:flex-end;gap:16px;margin-bottom:6px;}
+  .score-big{font-family:var(--font-serif);font-weight:700;font-size:56px;line-height:1;color:var(--ink);}
+  .tier-pill{
+    font-family:var(--font-mono);font-size:12.5px;font-weight:600;
+    padding:6px 12px;border-radius:999px;color:#fff;margin-bottom:8px;
+  }
+  .action-line{font-size:13.5px;color:var(--muted);margin:8px 0 18px;}
+  .action-line b{color:var(--ink);}
+
+  .scale-wrap{position:relative;margin:32px 0 20px;}
+  .scale-track{height:10px;border-radius:6px;overflow:hidden;display:flex;}
+  .scale-track div{height:100%;}
+  .scale-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--font-mono);}
+  .marker{
+    position:absolute;top:-14px;width:2px;height:24px;background:var(--ink);
+  }
+  .marker::after{
+    content:attr(data-label);position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+    font-family:var(--font-mono);font-size:10px;font-weight:600;white-space:nowrap;color:var(--ink);
+  }
+  .marker.after-marker{background:var(--terracotta);}
+  .marker.after-marker::after{color:var(--terracotta);}
+
+  .equation-box{
+    background:var(--forest-dark);color:#eef4f0;border-radius:10px;
+    padding:16px 18px;font-family:var(--font-mono);font-size:13px;
+    line-height:1.8;margin:6px 0 20px;
+  }
+  .equation-box .r1{color:#a9c9b8;}
+  .equation-box b{color:#fff;}
+
+  .eal-row{display:flex;gap:14px;margin-top:4px;}
+  .eal-box{flex:1;background:var(--panel);border-radius:10px;padding:14px 16px;}
+  .eal-box .k{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;margin-bottom:4px;}
+  .eal-box .v{font-family:var(--font-mono);font-size:19px;font-weight:600;color:var(--forest-dark);}
+  .eal-box .sub{font-size:11.5px;color:var(--muted);margin-top:2px;}
+
+  .reduction-note{
+    margin-top:16px;padding:12px 14px;border-radius:10px;background:#fbf3e6;
+    border:1px solid #eadfc4;font-size:13px;color:#5c4a12;
+  }
+  .reduction-note b{color:#3a2c05;}
+
+  /* ---------- Footer ---------- */
+  .footer-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:18px;}
+  @media (max-width:820px){.footer-grid{grid-template-columns:1fr;}}
+  .tier-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .tier-table td{padding:7px 8px;border-bottom:1px solid var(--line);}
+  .tier-table tr:last-child td{border-bottom:none;}
+  .tier-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;}
+  .formula-ref{font-family:var(--font-mono);font-size:12.5px;color:var(--muted);line-height:1.9;}
+  .formula-ref b{color:var(--ink);}
+
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);}
+  footer a{color:var(--forest);}
+
+  @media (max-width:480px){
+    .score-big{font-size:44px;}
+    .eal-row{flex-direction:column;}
+  }
+
+  .rp-banner{background:#fbeeea;border:1px solid #efcfc6;border-left:4px solid var(--maroon);border-radius:8px;padding:9px 14px;margin:0 0 18px;font-size:13px;color:#5b2417;}
+  .rp-banner button,.linklike{background:none;border:none;padding:0;margin-left:6px;color:var(--maroon);font-weight:700;text-decoration:underline;cursor:pointer;font-size:13px;font-family:inherit;}
+  .inline-notice{font-size:12px;color:var(--muted);border-top:1px dashed var(--line);margin-top:10px;padding-top:8px;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(18,28,23,.62);display:flex;align-items:center;justify-content:center;padding:16px;z-index:1000;}
+  .modal{background:var(--paper);max-width:640px;width:100%;max-height:92vh;overflow-y:auto;border-radius:14px;padding:26px 28px 22px;border-top:6px solid var(--maroon);box-shadow:0 20px 60px rgba(0,0,0,.35);}
+  .modal h2{font-family:var(--font-serif);margin:0 0 6px;font-size:22px;color:var(--forest-dark);}
+  .modal p.lead{margin:0 0 12px;color:var(--muted);font-size:14px;}
+  .modal ul{margin:0 0 14px;padding-left:18px;font-size:13.5px;line-height:1.55;}
+  .modal li{margin-bottom:8px;}
+  .modal .m-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .modal .m-actions button{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;}
+  .modal .m-actions button:hover{background:var(--forest-dark);}
+  .modal .m-note{font-size:12px;color:var(--muted);}
+
+  [hidden]{display:none !important;}
+  /* ---------- Custom / Your Field panel ---------- */
+  .custom-panel{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--radius);padding:18px 20px 16px;margin:0 0 18px;}
+  .custom-panel h2{font-family:var(--font-serif);font-size:17px;margin:0 0 4px;color:var(--forest-dark);font-weight:600;}
+  .custom-panel .cp-sub{font-size:12.5px;color:var(--muted);margin:0 0 14px;}
+  .cp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:640px){.cp-grid{grid-template-columns:1fr;}}
+  .cp-field label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;}
+  .cp-field input[type=text]{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-family:var(--font-sans);font-size:14px;color:var(--ink);background:#fff;}
+  .cp-field input[type=text]:focus{outline:2px solid var(--forest);outline-offset:1px;border-color:var(--forest);}
+  .cp-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;}
+  .cp-actions button{font-size:12.5px;font-weight:600;padding:9px 14px;border-radius:8px;border:1px solid var(--forest);background:var(--forest);color:#fff;cursor:pointer;}
+  .cp-actions button:hover{background:var(--forest-dark);}
+  .cp-actions button.secondary{background:var(--paper);color:var(--forest);}
+  .cp-actions button.secondary:hover{background:var(--panel);}
+  .custom-panel .cp-note{display:block;font-size:12px;color:var(--muted);margin-top:10px;}
+  .case-io-status{font-size:12.5px;font-weight:600;margin:8px 0 0;}
+  .case-io-status.ok{color:var(--forest);}
+  .case-io-status.error{color:var(--maroon);}
+  .cp-warn{font-size:12.5px;color:var(--maroon);background:#fbeeea;border:1px solid #efcfc6;border-radius:8px;padding:8px 11px;margin-top:12px;}
+  details.relabel{margin-top:14px;}
+  details.relabel summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--forest);}
+  .relabel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px;}
+  @media (max-width:900px){.relabel-grid{grid-template-columns:1fr 1fr;}}
+  .relabel-grid input[type=text]{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:var(--font-sans);}
+  .relabel-grid label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;}
+  .assess-name{font-size:13.5px;font-weight:600;color:var(--forest);margin:-8px 0 14px;padding:7px 10px;background:var(--panel);border-radius:8px;overflow-wrap:anywhere;}
+  .assess-name.empty{color:var(--muted);font-weight:500;font-style:italic;}
+  .assess-name .mod{font-family:var(--font-mono);font-size:11px;color:var(--terracotta);margin-left:6px;}
+  .example-chip.saved{border-color:var(--gold);background:#fdf8ea;}
+  .example-chip .x{
+    margin-left:8px;color:var(--muted);font-weight:700;font-size:16px;line-height:1;
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;
+  }
+  .example-chip .x:hover{color:#fff;background:var(--maroon);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">RMTI Sandbox · Oncology &amp; Public Health Surveillance · Live Calculator</div>
+    <h1>Risk Mechanism Theory Index</h1>
+    <p class="lede">Score a surveillance cohort or patient profile on one bounded 0–1 scale — likelihood, exposure and vulnerability raise the number, surveillance and care resilience bring it down. Use the Public Health / Oncology Surveillance tab for the worked HCC profiles, or the Custom / Your Field tab to name and score your own field.</p>
+    <div class="byline">Companion calculator for the Risk Mechanism Theory Index (RMTI) · <b>Cesar Marolla</b> · R = L·E·V·(1−ρ)</div>
+  </header>
+
+  <div class="rp-banner" role="note"><b>Research prototype.</b> Not a medical device, not clinically validated, and not for patient-care decisions. <button type="button" id="btn-notice">Read the full notice</button></div>
+  <div class="tabs" id="tabs"></div>
+  <p class="domain-note" id="domainNote"></p>
+
+  <!-- Custom / Your Field: name the field and the case being analysed -->
+  <section class="custom-panel" id="customPanel" hidden>
+    <h2>Name your field and case</h2>
+    <p class="cp-sub">Type the field you are analysing and the specific case, just as the worked examples are named. Both appear on your result.</p>
+    <div class="cp-grid">
+      <div class="cp-field">
+        <label for="in-field">Field of study</label>
+        <input type="text" id="in-field" maxlength="80" placeholder="e.g., Cholera early warning, Colorectal cancer screening" autocomplete="off">
+      </div>
+      <div class="cp-field">
+        <label for="in-case">Case / unit analysed</label>
+        <input type="text" id="in-case" maxlength="80" placeholder="e.g., Programme, region or cohort name" autocomplete="off">
+      </div>
+    </div>
+    <div class="cp-warn"><b>Do not type patient names or any identifying details</b> in these boxes or in saved cases. Use a programme, cohort or profile label instead.</div>
+    <details class="relabel">
+      <summary>Relabel the five inputs for your field (optional)</summary>
+      <div class="relabel-grid">
+        <div><label for="rl-L">Likelihood (L) is called…</label><input type="text" id="rl-L" maxlength="40" placeholder="e.g., Hazard probability" autocomplete="off"></div>
+        <div><label for="rl-E">Exposure (E) is called…</label><input type="text" id="rl-E" maxlength="40" placeholder="e.g., Share exposed" autocomplete="off"></div>
+        <div><label for="rl-V">Vulnerability (V) is called…</label><input type="text" id="rl-V" maxlength="40" placeholder="e.g., Fragility" autocomplete="off"></div>
+        <div><label for="rl-rho">Resilience (ρ) is called…</label><input type="text" id="rl-rho" maxlength="40" placeholder="e.g., Buffer capacity" autocomplete="off"></div>
+        <div><label for="rl-C">Consequence (C) is called…</label><input type="text" id="rl-C" maxlength="40" placeholder="e.g., Loss severity" autocomplete="off"></div>
+      </div>
+    </details>
+    <div class="cp-actions">
+      <button type="button" id="btn-save">Save as example</button>
+      <button type="button" id="btn-export" class="secondary">Export saved cases (.json)</button>
+      <button type="button" id="btn-import" class="secondary">Import cases (.json)</button>
+      <input type="file" id="fileImport" accept="application/json,.json" hidden>
+    </div>
+    <p class="cp-note">Saved cases live in this browser's storage only — nothing is uploaded anywhere. They survive a reload, but stay tied to this browser and device. Use Export / Import to archive a case set, move it to another browser, or share it with a co-author.</p>
+    <p class="case-io-status" id="caseIoStatus" hidden></p>
+  </section>
+
+  <p class="examples-label" id="examplesLabel">Load a worked example</p>
+  <div class="examples-row" id="examplesRow"></div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Inputs</h2>
+
+      <div class="field">
+        <div class="field-top"><label id="lbl-L">Likelihood (L)</label><span class="val" id="val-L">0.80</span></div>
+        <div class="field-sub" id="sub-L"></div>
+        <input type="range" id="in-L" min="0" max="1" step="0.01" value="0.8">
+      </div>
+      <div class="field">
+        <div class="field-top"><label id="lbl-E">Exposure (E)</label><span class="val" id="val-E">0.85</span></div>
+        <div class="field-sub" id="sub-E"></div>
+        <input type="range" id="in-E" min="0" max="1" step="0.01" value="0.85">
+        <div class="pop-row" id="popRow">
+          <input type="number" id="in-N" min="0" step="1" inputmode="numeric" placeholder="Population / cohort size (N)" value="">
+          <button id="btn-elog">Estimate E from N</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-top"><label id="lbl-V">Vulnerability (V)</label><span class="val" id="val-V">0.75</span></div>
+        <div class="field-sub" id="sub-V"></div>
+        <input type="range" id="in-V" min="0" max="1" step="0.01" value="0.75">
+      </div>
+      <div class="field">
+        <div class="field-top"><label id="lbl-rho">Resilience now (ρ)</label><span class="val" id="val-rho">0.20</span></div>
+        <div class="field-sub" id="sub-rho"></div>
+        <input type="range" id="in-rho" min="0" max="1" step="0.01" value="0.2">
+      </div>
+
+      <div class="divider">
+        <label class="compare-toggle"><input type="checkbox" id="compareToggle" checked> <span id="compareLabelText">Compare against a planned surveillance improvement</span></label>
+        <div class="field" id="afterField">
+          <div class="field-top"><label id="lbl-rhoAfter">Resilience after surveillance improvement (ρ)</label><span class="val" id="val-rhoAfter">0.58</span></div>
+          <input type="range" id="in-rhoAfter" min="0" max="1" step="0.01" value="0.58">
+        </div>
+      </div>
+
+      <div class="divider">
+        <div class="field-top" style="margin-bottom:8px;"><label id="lbl-C">Consequence if realized (C)</label></div>
+        <div class="cbtns" id="cbtns"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Result</h2>
+      <div class="assess-name" id="assessName"></div>
+      <div class="score-block">
+        <div class="score-big" id="scoreR">0.408</div>
+        <div class="tier-pill" id="tierPill" style="background:#c1502f;">Severe</div>
+      </div>
+      <div class="action-line" id="actionLine"></div>
+      <div class="inline-notice" id="inlineNotice" hidden></div>
+
+      <div class="scale-wrap" id="scaleWrap">
+        <div class="scale-track" id="scaleTrack"></div>
+      </div>
+      <div class="scale-labels"><span>0</span><span>0.05</span><span>0.15</span><span>0.35</span><span>0.60</span><span>1.0</span></div>
+
+      <div class="equation-box" id="eqBox"></div>
+
+      <div class="eal-row">
+        <div class="eal-box">
+          <div class="k">Expected loss now</div>
+          <div class="v" id="ealNow">0.480</div>
+          <div class="sub" id="ealNowSub">EAL = L·C·(1−ρ)</div>
+        </div>
+        <div class="eal-box" id="ealAfterBox">
+          <div class="k">Expected loss after</div>
+          <div class="v" id="ealAfter">0.252</div>
+          <div class="sub" id="equitySub"></div>
+        </div>
+      </div>
+
+      <div class="reduction-note" id="reductionNote"></div>
+    </section>
+  </div>
+
+  <div class="footer-grid">
+    <div class="card">
+      <h2>Fixed tier bands (Table 3)</h2>
+      <table class="tier-table" id="tierTable"></table>
+      <p style="font-size:12px;color:var(--muted);margin:8px 0 0;">Ranges are inclusive on the lower bound and exclusive on the upper bound — e.g. a score of exactly 0.15 falls in the higher tier, not the lower one.</p>
+    </div>
+    <div class="card">
+      <h2>The mechanism</h2>
+      <div class="formula-ref">
+        <b>IR</b> = L · E · V<br>
+        <b>R</b> = IR · (1 − ρ) &nbsp;— bounded 0–1<br>
+        <b>EAL</b> = L · C · (1 − ρ)<br>
+        <b>E_log</b>(N) = [log₁₀N − log₁₀N_min] / [log₁₀N_max − log₁₀N_min]<br>
+        <span style="color:var(--muted)">Resilience enters as (1−ρ), never ρ directly, so coping capacity always lowers risk.</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 Dr. Cesar Marolla. Reference implementation of the Risk Mechanism Theory Index (RMTI) for public health and oncology (HCC) surveillance. Research prototype for educational and research use: it is not a medical device, has not been clinically validated, and is not a substitute for clinical judgment or current clinical guidelines. It does not diagnose, predict outcomes for individual patients, or prescribe treatment, and its on-screen readings are not recommendations for any patient. Decisions about patient care remain with the treating clinicians. Do not enter patient-identifiable information. Source code: <span id="repoSlot"></span> (<span id="licenseSlot"></span>). Citable on Zenodo: <span id="doiSlot"></span>. Version <span id="verSlot"></span>. <span id="citeSlot"></span>
+  </footer>
+
+</div>
+<div class="modal-overlay" id="noticeModal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle" hidden>
+  <div class="modal">
+    <h2 id="noticeTitle">Before you use this tool</h2>
+    <p class="lead">This is a research and teaching prototype. Please read what it is, and what it is not.</p>
+    <ul>
+      <li><b>What it does.</b> It applies the Risk Mechanism Theory Index (RMTI) to hepatocellular carcinoma (HCC) and other surveillance settings. It turns the numbers you enter into a relative, rubric-based score, a tier and a &ldquo;framework reading&rdquo;. It shows its equations and every input so the logic can be checked.</li>
+      <li><b>What it is not.</b> It is not a medical device and has not been reviewed, cleared or approved by the FDA or any other regulator. It has not been clinically validated, and the HCC application is unpublished work in preparation that has not completed peer review. Its scores are not probabilities that a person will develop cancer. It does not diagnose, stage, predict outcomes or prescribe treatment.</li>
+      <li><b>How to read the messages on screen.</b> Statements about surveillance intensity, work-up or referral are readings of the research framework, offered for discussion by a clinical team. They are not recommendations for any patient.</li>
+      <li><b>Who decides.</b> Decisions about a real patient rest with the treating clinicians, using current clinical guidelines, complete clinical information and their own professional judgment. The software is provided &ldquo;as is&rdquo;, without warranty (Apache License, Version 2.0).</li>
+      <li><b>Your data.</b> Everything runs in your browser and nothing is sent anywhere. Please do not type patient names or other identifying details.</li>
+    </ul>
+    <div class="m-actions">
+      <button type="button" id="noticeOk">I understand &mdash; continue</button>
+      <span class="m-note">Full notice: <a href="https://github.com/drmarolla/rmti-oncology-sandbox/blob/main/DISCLAIMER.md" target="_blank" rel="noopener">DISCLAIMER.md</a> in the project repository.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const C_VALUES = [0.10, 0.30, 0.50, 0.75, 1.00];
+const TIER_BOUNDS = [0.05, 0.15, 0.35, 0.60];
+const TIER_LABELS = ['Low','Moderate','High','Severe','Critical'];
+const TIER_COLORS = ['#6f9c78','#c99a2e','#d9822f','#c1502f','#7a2419'];
+
+function tierIndex(R){
+  if (!Number.isFinite(R)) return -1; // invalid score — caller must not treat this as a real tier
+  for(let i=0;i<TIER_BOUNDS.length;i++){ if(R < TIER_BOUNDS[i]) return i; }
+  return 4;
+}
+function roundTo(x, d){
+  // Corrects the classic binary-float artifact where an exact decimal
+  // like 0.0585 is stored as 0.058499999999999996, which would otherwise
+  // round the wrong way. Mirrors the Decimal(ROUND_HALF_UP) path in the
+  // Python reference implementation (rmti_core.py).
+  const f = Math.pow(10, d);
+  const eps = x >= 0 ? 1e-9 : -1e-9;
+  return Math.round(x * f + eps) / f;
+}
+function fmt(x, d=3){ return roundTo(Number(x), d).toFixed(d); }
+
+/* ---------------- Domain configuration ---------------- */
+const DOMAINS = {
+  health: {
+    label: 'Public Health / Oncology Surveillance',
+    note: 'First applied to hepatocellular carcinoma (HCC) surveillance triage (Marolla, 2026, in preparation). Likelihood comes from a validated risk score (aMAP, THRI); vulnerability from hepatic reserve (ALBI); resilience from surveillance-delivery adequacy.',
+    labels: {L:'Likelihood (L)', E:'Exposure (E)', V:'Vulnerability (V)', rho:'Resilience (ρ)', C:'Consequence (C)'},
+    compareLabel: 'Compare against a planned surveillance improvement',
+    afterLabel: 'Resilience after surveillance improvement (ρ)',
+    reductionWord: 'a surveillance improvement',
+    sub: {
+      L:'Annualized HCC probability, supplied by a validated score (aMAP / THRI / hccrisk.com).',
+      E:'Share of the at-risk population within the active surveillance footprint.',
+      V:'Liver-reserve sensitivity to a delayed diagnosis (ALBI grade 1–3).',
+      rho:'Fraction of risk absorbed by surveillance delivery — ad-hoc vs. optimised programme.'
+    },
+    cLabels: [['Very early','BCLC 0'], ['Early','BCLC A'], ['Early-intermediate','—'], ['Intermediate','BCLC B'], ['Advanced','BCLC C–D']],
+    tierActions: ['framework reading: lowest band, consistent with routine, guideline-based surveillance intervals','framework reading: guideline-concordant surveillance appears adequate; worth checking that it is actually delivered','framework reading: the clinical team may wish to review surveillance intensity, outreach and patient navigation','framework reading: the clinical team may wish to review the timing of work-up and the treatment-pathway options','framework reading: the clinical team may wish to consider prompt specialist review'],
+    eLogBounds: {min:100, max:5000000},   // same as RMTI-Py N_MIN_HCC / N_MAX_HCC
+    showPop: true,
+    popLabel: 'At-risk cohort size (N)',
+    equityLabel: 'per 1,000,000 at-risk patients',
+    examples: [
+      {name:'Untreated HBV', N:100000, L:0.90, E:0.70, V:0.55, rhoNow:0.10, rhoAfter:0.45, C:5},
+      {name:'Active viral cirrhosis', N:100000, L:0.55, E:0.70, V:0.53, rhoNow:0.50, rhoAfter:0.65, C:5},
+      {name:'Alcohol cirrhosis', N:100000, L:0.30, E:0.65, V:0.60, rhoNow:0.20, rhoAfter:0.50, C:5},
+      {name:'Cured-HCV cirrhosis', N:100000, L:0.25, E:0.60, V:0.48, rhoNow:0.20, rhoAfter:0.55, C:5},
+      {name:'Suppressed-HBV', N:100000, L:0.20, E:0.55, V:0.45, rhoNow:0.20, rhoAfter:0.55, C:5},
+      {name:'NAFLD cirrhosis', N:100000, L:0.15, E:0.60, V:0.53, rhoNow:0.20, rhoAfter:0.50, C:5},
+      {name:'High-burden MASLD (Pearl)', N:100000, L:0.65, E:0.60, V:0.50, rhoNow:0.20, rhoAfter:0.65, C:5},
+      {name:'Illustrative case A · early-stage', N:100000, L:0.30, E:0.60, V:0.50, rhoNow:0.20, rhoAfter:0.20, C:2, demo:true},
+      {name:'Illustrative case B · high-consequence', N:100000, L:0.25, E:0.60, V:0.55, rhoNow:0.20, rhoAfter:0.20, C:5, demo:true},
+    ]
+  },
+  custom: {
+    label: 'Custom / Your Field',
+    note: 'The same four terms generalize to any surveillance or care setting where something raises risk (hazard × exposure × vulnerability) and something absorbs it (resilience). Type the name of your field and the case you are analysing, relabel the inputs if you wish, and score it — for example another cancer, an epidemic early-warning system, a screening programme, or a hospital service line.',
+    labels: {L:'Likelihood (L)', E:'Exposure (E)', V:'Vulnerability (V)', rho:'Resilience (ρ)', C:'Consequence (C)'},
+    compareLabel: 'Compare against a planned improvement in surveillance or care',
+    afterLabel: 'Resilience after improvement (ρ)',
+    reductionWord: 'an improvement',
+    sub: {
+      L:'How probable the adverse event (disease, outbreak, missed or delayed diagnosis) is in your planning horizon.',
+      E:'Share of the at-risk population or caseload inside the surveillance or service footprint.',
+      V:'Sensitivity to harm given current adaptive capacity — the conditions that deepen it.',
+      rho:'Capacity of the programme or system to detect, absorb and respond, entered as (1−ρ) so more resilience always helps.'
+    },
+    cLabels: [['Negligible','minimal'], ['Minor','contained'], ['Moderate','material'], ['Major','severe'], ['Catastrophic','critical']],
+    tierActions: ['Monitor & maintain baseline','Low-regret preventive measures','Structured mitigation planning','Priority intervention & funding','Immediate, system-level response'],
+    eLogBounds: {min:100, max:5000000},   // same as the health domain (RMTI-Py HCC bounds)
+    showPop: true,
+    popLabel: 'At-risk population / cohort size (N)',
+    equityLabel: 'per 1,000,000 at-risk units',
+    examples: []
+  }
+};
+
+
+const DEFAULT_DOMAIN = 'health';
+
+/* ---- Release info. After your Zenodo release, put the concept DOI between the quotes (for example '10.5281/zenodo.1234567') and raise the version. ---- */
+const RMTI_RELEASE = {
+  version: '2.1.0',
+  doi: '10.5281/zenodo.22909090',         // concept DOI — always resolves to the latest version; cite this in running text
+  versionDoi: '',  // TODO: fill in after uploading v2.1.0 as a new Zenodo version — Zenodo assigns this number at upload time, it can't be known beforehand. Was '10.5281/zenodo.22909091' for v1.0.1.
+  repo: 'https://github.com/drmarolla/rmti-oncology-sandbox',
+  license: 'Apache License 2.0',
+  author: 'Marolla, C.',
+  year: 2026,
+  title: 'RMTI Sandbox — Oncology and Public Health Surveillance: Reference Implementation of the Risk Mechanism Theory Index'
+};
+const INLINE_NOTICE = "Research-framework reading only. Not a diagnosis, prognosis or treatment recommendation for any patient. Decisions rest with the treating clinical team, current guidelines and their professional judgment.";
+const TERM_SYMBOLS = {L:'L', E:'E', V:'V', rho:'ρ', C:'C'};
+const CUSTOM_START = {L:0.50, E:0.50, V:0.50, rhoNow:0.20, rhoAfter:0.50, C:3, N:0};
+
+/* ---- Saved-case persistence (localStorage, this browser only) ----
+   Key is unique to this sandbox: GitHub Pages project sites under the same
+   account (e.g. disaster-science and oncology) share one origin, and
+   localStorage is scoped by origin, not by path — so an unqualified key
+   would let saved cases leak between sandboxes. Storage stays entirely
+   client-side, consistent with "nothing is sent anywhere" — do not put
+   patient-identifiable details in a saved case name or field name. */
+const SAVED_CASES_KEY = 'rmti_oncology_saved_cases_v1';
+function loadSavedCases(){
+  try {
+    const raw = localStorage.getItem(SAVED_CASES_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch(e){ return []; } // storage unavailable (private browsing, blocked cookies, etc.)
+}
+function persistSavedCases(){
+  try { localStorage.setItem(SAVED_CASES_KEY, JSON.stringify(state.saved)); }
+  catch(e){ /* fail silently — cases still work for this session */ }
+}
+
+/* ---- Export saved cases as JSON, and import them back in ----
+   localStorage alone never leaves the browser that wrote it. Export lets a
+   reviewer archive a case set outside the browser, move it to another
+   device, or hand it to a co-author; Import reads that file back in. */
+const SANDBOX_ID = 'oncology';
+const CASES_EXPORT_SCHEMA = 'rmti-saved-cases';
+const CASES_EXPORT_SCHEMA_VERSION = 1;
+
+function caseKey(item){ return String((item && (item.caseName || item.fieldName)) || '').trim().toLowerCase(); }
+
+function isValidCaseShape(item){
+  if (!item || typeof item !== 'object') return false;
+  if (!['L','E','V','rhoNow','rhoAfter','C','N'].every(k => Number.isFinite(Number(item[k])))) return false;
+  return Boolean((item.fieldName && item.fieldName.trim()) || (item.caseName && item.caseName.trim()));
+}
+
+function sanitizeCase(item){
+  // Coerce an imported record to exactly the shape this app writes itself,
+  // dropping unknown fields and clamping numbers into valid ranges — an
+  // edited-by-hand or foreign JSON file should never be able to inject bad
+  // state (out-of-range sliders, a non-integer tier, script content, etc.).
+  const tl = item.termLabels || {};
+  return {
+    fieldName: String(item.fieldName || '').slice(0, 80),
+    caseName: String(item.caseName || '').slice(0, 80),
+    L: Math.min(1, Math.max(0, Number(item.L))),
+    E: Math.min(1, Math.max(0, Number(item.E))),
+    V: Math.min(1, Math.max(0, Number(item.V))),
+    rhoNow: Math.min(1, Math.max(0, Number(item.rhoNow))),
+    rhoAfter: Math.min(1, Math.max(0, Number(item.rhoAfter))),
+    C: Math.min(5, Math.max(1, Math.round(Number(item.C)) || 1)),
+    N: Math.max(0, Math.trunc(Number(item.N)) || 0),
+    compare: item.compare !== false,
+    termLabels: {
+      L: String(tl.L || ''), E: String(tl.E || ''), V: String(tl.V || ''),
+      rho: String(tl.rho || ''), C: String(tl.C || '')
+    }
+  };
+}
+
+function showCaseIoStatus(msg, isError){
+  const el = document.getElementById('caseIoStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.toggle('error', !!isError);
+  el.classList.toggle('ok', !isError);
+  el.hidden = false;
+  clearTimeout(showCaseIoStatus._t);
+  showCaseIoStatus._t = setTimeout(()=>{ el.hidden = true; }, 7000);
+}
+
+function exportSavedCases(){
+  if (!state.saved.length){
+    showCaseIoStatus('No saved cases to export yet — save a case first.', true);
+    return;
+  }
+  const payload = {
+    schema: CASES_EXPORT_SCHEMA,
+    schemaVersion: CASES_EXPORT_SCHEMA_VERSION,
+    sandbox: SANDBOX_ID,
+    releaseVersion: RMTI_RELEASE.version,
+    exportedAt: new Date().toISOString(),
+    cases: state.saved
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `rmti-${SANDBOX_ID}-saved-cases-${payload.exportedAt.slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 1000);
+  showCaseIoStatus(`Exported ${state.saved.length} saved case${state.saved.length===1?'':'s'} to a .json file.`);
+}
+
+function importSavedCasesFromText(text){
+  let parsed;
+  try { parsed = JSON.parse(text); }
+  catch(e){ showCaseIoStatus('That file is not valid JSON.', true); return; }
+
+  const isWrapped = parsed && !Array.isArray(parsed) && Array.isArray(parsed.cases);
+  const list = Array.isArray(parsed) ? parsed : (isWrapped ? parsed.cases : null);
+  if (!list){ showCaseIoStatus('That JSON file does not contain a list of cases.', true); return; }
+
+  if (isWrapped && parsed.sandbox && parsed.sandbox !== SANDBOX_ID){
+    // Not fatal: the Custom-domain case shape is shared across every RMTI
+    // sandbox, so a file from another sandbox will still load — just flag it.
+    showCaseIoStatus(`Note: this file was exported from the "${parsed.sandbox}" sandbox. Importing anyway…`);
+  }
+
+  let added = 0, updated = 0, skipped = 0;
+  list.forEach(raw=>{
+    if (!isValidCaseShape(raw)){ skipped++; return; }
+    const item = sanitizeCase(raw);
+    const key = caseKey(item);
+    const existing = state.saved.findIndex(s => caseKey(s) === key);
+    if (existing >= 0){ state.saved[existing] = item; updated++; }
+    else { state.saved.push(item); added++; }
+  });
+
+  if (added + updated === 0){
+    showCaseIoStatus('No valid cases were found in that file.', true);
+    return;
+  }
+  persistSavedCases();
+  if (state.domain === 'custom') buildExamples(DOMAINS.custom);
+  const parts = [];
+  if (added) parts.push(`${added} added`);
+  if (updated) parts.push(`${updated} updated (same name)`);
+  if (skipped) parts.push(`${skipped} skipped (not a valid case)`);
+  const seeHint = state.domain !== 'custom' ? ' Switch to the Custom / Your Field tab to see them.' : '';
+  showCaseIoStatus(`Import complete: ${parts.join(', ')}.${seeHint}`);
+}
+
+let state = {
+  domain: DEFAULT_DOMAIN,
+  L: 0.80, E: 0.85, V: 0.75, rhoNow: 0.20, rhoAfter: 0.58, C: 4, N: 0,
+  compare: true,
+  fieldName: '',          // Custom: field of study typed by the user
+  caseName: '',           // name of the loaded example, or the case typed by the user
+  termLabels: {L:'', E:'', V:'', rho:'', C:''},   // Custom: optional relabelling
+  loaded: null,           // snapshot of the loaded preset, to detect edits
+  saved: loadSavedCases(), // Custom: cases saved by the user, persisted in this browser
+  activeSavedItem: null,  // reference to the saved-case object currently on screen, if any
+  customDraft: null       // Custom: numbers kept while the user visits another tab
+};
+
+/* ---------------- Build static chrome: tabs, tier table ---------------- */
+const tabsEl = document.getElementById('tabs');
+Object.keys(DOMAINS).forEach(key=>{
+  const b = document.createElement('button');
+  b.className = 'tab' + (key===state.domain ? ' active' : '');
+  b.textContent = DOMAINS[key].label;
+  b.onclick = ()=> switchDomain(key);
+  b.dataset.key = key;
+  tabsEl.appendChild(b);
+});
+
+const tierTableEl = document.getElementById('tierTable');
+TIER_LABELS.forEach((lbl,i)=>{
+  const lo = i===0 ? '0' : fmt(TIER_BOUNDS[i-1],2);
+  const hi = i===4 ? '1.0' : fmt(TIER_BOUNDS[i],2);
+  // tierIndex() uses strict "<" against each upper bound, so every band is
+  // [lo, hi) except the last, which is closed at the top ([lo, 1.0]).
+  const range = i===4 ? '≥ '+lo : (i===0 ? '< '+hi : '[' + lo + ', ' + hi + ')');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><span class="tier-dot" style="background:${TIER_COLORS[i]}"></span>${lbl}</td><td>${range}</td>`;
+  tierTableEl.appendChild(tr);
+});
+
+/* ---------------- Wire up inputs ---------------- */
+const els = {};
+['L','E','V','rho','rhoAfter'].forEach(k=>{ els[k] = document.getElementById('in-'+k); });
+els.N = document.getElementById('in-N');
+els.field = document.getElementById('in-field');
+els.case = document.getElementById('in-case');
+const relabelEls = {};
+['L','E','V','rho','C'].forEach(k=>{ relabelEls[k] = document.getElementById('rl-'+k); });
+const compareToggle = document.getElementById('compareToggle');
+const afterField = document.getElementById('afterField');
+const ealAfterBox = document.getElementById('ealAfterBox');
+
+function syncSliderFill(el){
+  const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+  el.style.setProperty('--pct', pct+'%');
+  // Keep the floating number next to the slider in sync with its value.
+  // Sliders are id="in-<key>"; their number labels are id="val-<key>".
+  const valEl = document.getElementById(el.id.replace(/^in-/, 'val-'));
+  if (valEl) valEl.textContent = fmt(Number(el.value), 2);
+}
+
+/* Labels: the Custom domain lets the user rename the five inputs (text set via textContent only) */
+function termLabel(cfg, k){
+  const typed = (state.domain==='custom' ? state.termLabels[k] : '').trim();
+  return typed ? `${typed} (${TERM_SYMBOLS[k]})` : cfg.labels[k];
+}
+function applyLabels(){
+  const cfg = DOMAINS[state.domain];
+  ['L','E','V','rho','C'].forEach(k=>{
+    document.getElementById('lbl-'+k).textContent = termLabel(cfg, k);
+  });
+}
+
+function switchDomain(key){
+  const prev = state.domain;
+  if (prev === 'custom' && key !== 'custom'){
+    // remember the user's Custom draft so switching tabs never loses their numbers
+    state.customDraft = {L:state.L, E:state.E, V:state.V, rhoNow:state.rhoNow, rhoAfter:state.rhoAfter, C:state.C, N:state.N};
+  }
+  state.domain = key;
+  document.querySelectorAll('.tab').forEach(t=> t.classList.toggle('active', t.dataset.key===key));
+  const cfg = DOMAINS[key];
+  document.getElementById('domainNote').textContent = cfg.note;
+  applyLabels();
+  document.getElementById('sub-L').textContent = cfg.sub.L;
+  document.getElementById('sub-E').textContent = cfg.sub.E;
+  document.getElementById('sub-V').textContent = cfg.sub.V;
+  document.getElementById('sub-rho').textContent = cfg.sub.rho;
+  document.getElementById('compareLabelText').textContent = cfg.compareLabel;
+  document.getElementById('lbl-rhoAfter').textContent = cfg.afterLabel;
+  document.getElementById('popRow').style.display = cfg.showPop ? 'flex' : 'none';
+  els.N.placeholder = cfg.popLabel;
+  document.getElementById('customPanel').hidden = (key!=='custom');
+  document.getElementById('examplesLabel').textContent = (key==='custom') ? 'Your saved cases (this browser)' : 'Load a worked example';
+
+  buildConsequenceButtons(cfg);
+  buildExamples(cfg);
+
+  if (cfg.examples.length){
+    loadExample(cfg.examples[0]);
+  } else {
+    // Custom: start from neutral mid-scale values (or the user's own draft), never from another domain's example
+    setInputs(state.customDraft || CUSTOM_START);
+    state.loaded = null;
+    state.fieldName = els.field.value.trim();
+    state.caseName = els.case.value.trim();
+    buildConsequenceButtons(cfg);
+    render();
+  }
+}
+
+function buildConsequenceButtons(cfg){
+  const wrap = document.getElementById('cbtns');
+  wrap.innerHTML = '';
+  cfg.cLabels.forEach((pair,i)=>{
+    const btn = document.createElement('div');
+    btn.className = 'cbtn' + (state.C===i+1 ? ' active' : '');
+    btn.innerHTML = `${pair[0]}<br><span style="opacity:.7">${pair[1]}</span>`;
+    btn.onclick = ()=>{ state.C = i+1; buildConsequenceButtons(cfg); render(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function buildExamples(cfg){
+  const row = document.getElementById('examplesRow');
+  row.innerHTML = '';
+  if (state.domain === 'custom'){
+    if (!state.saved.length){
+      const hint = document.createElement('span');
+      hint.style.cssText = 'font-size:12.5px;color:var(--muted);';
+      hint.textContent = 'No saved cases yet: name your field and case above, set the sliders, then choose “Save as example” — or Import a previously exported .json file.';
+      row.appendChild(hint);
+      return;
+    }
+    state.saved.forEach((item, idx)=>{
+      const chip = document.createElement('div');
+      chip.className = 'example-chip saved';
+      const label = document.createElement('span');
+      label.textContent = item.caseName || item.fieldName || 'Untitled case';
+      const x = document.createElement('span');
+      x.className = 'x'; x.title = 'Remove this saved case'; x.textContent = '×';
+      x.onclick = (ev)=>{
+        ev.stopPropagation();
+        const wasActive = state.saved[idx] === state.activeSavedItem;
+        state.saved.splice(idx,1);
+        persistSavedCases();
+        if (wasActive){
+          // The case on screen was just deleted — don't keep presenting it.
+          state.activeSavedItem = null;
+          state.fieldName = ''; state.caseName = '';
+          els.field.value = ''; els.case.value = '';
+          setInputs(CUSTOM_START);
+          Object.keys(state.termLabels).forEach(k=>{ state.termLabels[k] = ''; relabelEls[k].value = ''; });
+          applyLabels();
+          render();
+        }
+        buildExamples(DOMAINS.custom);
+      };
+      chip.appendChild(label); chip.appendChild(x);
+      chip.onclick = ()=> loadSaved(item);
+      row.appendChild(chip);
+    });
+    return;
+  }
+  cfg.examples.forEach(ex=>{
+    const chip = document.createElement('div');
+    chip.className = 'example-chip' + (ex.demo ? ' demo' : '');
+    chip.textContent = ex.name;
+    chip.onclick = ()=> loadExample(ex);
+    row.appendChild(chip);
+  });
+}
+
+function setInputs(o){
+  state.L = o.L; state.E = o.E; state.V = o.V;
+  state.rhoNow = o.rhoNow; state.rhoAfter = o.rhoAfter; state.C = o.C; state.N = o.N;
+  els.L.value = o.L; els.E.value = o.E; els.V.value = o.V;
+  els.rho.value = o.rhoNow; els.rhoAfter.value = o.rhoAfter;
+  els.N.value = o.N > 0 ? o.N : '';
+  [els.L, els.E, els.V, els.rho, els.rhoAfter].forEach(syncSliderFill);
+}
+
+function loadExample(ex){
+  setInputs(ex);
+  state.fieldName = DOMAINS[state.domain].label;
+  state.caseName = ex.name;
+  state.loaded = {L:ex.L, E:ex.E, V:ex.V, rhoNow:ex.rhoNow, rhoAfter:ex.rhoAfter, C:ex.C, N:ex.N};
+  state.activeSavedItem = null;
+  buildConsequenceButtons(DOMAINS[state.domain]);
+  render();
+}
+
+function loadSaved(item){
+  setInputs(item);
+  state.compare = item.compare;
+  compareToggle.checked = item.compare;
+  els.field.value = item.fieldName; els.case.value = item.caseName;
+  state.fieldName = item.fieldName; state.caseName = item.caseName;
+  Object.keys(item.termLabels).forEach(k=>{ state.termLabels[k] = item.termLabels[k]; relabelEls[k].value = item.termLabels[k]; });
+  state.loaded = null;
+  state.activeSavedItem = item;
+  applyLabels();
+  buildConsequenceButtons(DOMAINS.custom);
+  render();
+}
+
+els.L.addEventListener('input', ()=>{ state.L = +els.L.value; syncSliderFill(els.L); render(); });
+els.E.addEventListener('input', ()=>{ state.E = +els.E.value; syncSliderFill(els.E); render(); });
+els.V.addEventListener('input', ()=>{ state.V = +els.V.value; syncSliderFill(els.V); render(); });
+els.rho.addEventListener('input', ()=>{ state.rhoNow = +els.rho.value; syncSliderFill(els.rho); render(); });
+els.rhoAfter.addEventListener('input', ()=>{ state.rhoAfter = +els.rhoAfter.value; syncSliderFill(els.rhoAfter); render(); });
+els.N.addEventListener('input', ()=>{
+  // Strict input: only non-negative integers make it into state. Anything
+  // else (blank, negative, decimal, non-numeric) is treated as 0 rather
+  // than silently becoming NaN and cascading into the tier calculation.
+  const raw = Math.trunc(Number(els.N.value));
+  state.N = (Number.isFinite(raw) && raw >= 0) ? raw : 0;
+  if (els.N.value !== '' && String(state.N) !== els.N.value) els.N.value = state.N;
+  render();
+});
+
+/* Custom / Your Field: typed names and relabelling */
+els.field.addEventListener('input', ()=>{ state.fieldName = els.field.value.trim(); render(); });
+els.case.addEventListener('input', ()=>{ state.caseName = els.case.value.trim(); render(); });
+Object.keys(relabelEls).forEach(k=>{
+  relabelEls[k].addEventListener('input', ()=>{ state.termLabels[k] = relabelEls[k].value; applyLabels(); });
+});
+document.getElementById('btn-save').addEventListener('click', ()=>{
+  const item = {
+    fieldName: els.field.value.trim(), caseName: els.case.value.trim(),
+    L: state.L, E: state.E, V: state.V, rhoNow: state.rhoNow, rhoAfter: state.rhoAfter, C: state.C, N: state.N,
+    compare: state.compare, termLabels: Object.assign({}, state.termLabels)
+  };
+  if (!item.caseName && !item.fieldName) item.caseName = 'Untitled case ' + (state.saved.length + 1);
+  const key = item.caseName || item.fieldName;
+  const existing = state.saved.findIndex(s => (s.caseName || s.fieldName) === key);
+  if (existing >= 0) state.saved[existing] = item; else state.saved.push(item);
+  state.activeSavedItem = item;
+  persistSavedCases();
+  buildExamples(DOMAINS.custom);
+});
+
+document.getElementById('btn-export').addEventListener('click', exportSavedCases);
+document.getElementById('btn-import').addEventListener('click', ()=> document.getElementById('fileImport').click());
+document.getElementById('fileImport').addEventListener('change', (ev)=>{
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = ''; // reset so importing the same filename again still fires 'change'
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=> importSavedCasesFromText(String(reader.result || ''));
+  reader.onerror = ()=> showCaseIoStatus('Could not read that file.', true);
+  reader.readAsText(file);
+});
+
+compareToggle.addEventListener('change', ()=>{
+  state.compare = compareToggle.checked;
+  afterField.style.display = state.compare ? 'block' : 'none';
+  ealAfterBox.style.display = state.compare ? 'block' : 'none';
+  render();
+});
+
+document.getElementById('btn-elog').addEventListener('click', ()=>{
+  const cfg = DOMAINS[state.domain];
+  // N must be a positive finite number to take a log — anything else falls
+  // back to 1 (the log-scale floor) instead of producing NaN.
+  const N = (Number.isFinite(state.N) && state.N > 0) ? state.N : 1;
+  const eLog = (Math.log10(N) - Math.log10(cfg.eLogBounds.min)) / (Math.log10(cfg.eLogBounds.max) - Math.log10(cfg.eLogBounds.min));
+  const clamped = Math.max(0, Math.min(1, eLog));
+  state.E = Math.round(clamped * 100) / 100;
+  els.E.value = state.E;
+  syncSliderFill(els.E);
+  render();
+});
+
+/* ---------------- Core RMTI math (mirrors rmti_core.py) ---------------- */
+function score(L,E,V,rho,C){
+  const IR = L*E*V;
+  const R = IR*(1-rho);
+  const EAL = L*C_VALUES[C-1]*(1-rho);
+  return {IR,R,EAL};
+}
+function pctReduction(rhoNow, rhoAfter){
+  return (1 - (1-rhoAfter)/(1-rhoNow)) * 100;
+}
+
+/* ---------------- Assessment title (field · case), like the named worked examples ---------------- */
+function renderAssessName(){
+  const el = document.getElementById('assessName');
+  el.textContent = '';
+  el.classList.remove('empty');
+  if (state.domain === 'custom'){
+    const parts = [state.fieldName, state.caseName].filter(Boolean);
+    if (!parts.length){
+      el.classList.add('empty');
+      el.textContent = 'Unnamed assessment — type your field and case above to label this result.';
+      return;
+    }
+    el.textContent = parts.join(' · ');
+    return;
+  }
+  el.textContent = [state.fieldName, state.caseName].filter(Boolean).join(' · ');
+  if (state.loaded){
+    const s = state.loaded;
+    const modified = s.L!==state.L || s.E!==state.E || s.V!==state.V || s.rhoNow!==state.rhoNow ||
+                     s.rhoAfter!==state.rhoAfter || s.C!==state.C || s.N!==state.N;
+    if (modified){
+      const m = document.createElement('span'); m.className = 'mod'; m.textContent = 'inputs modified';
+      el.appendChild(m);
+    }
+  }
+}
+
+/* ---------------- Render ---------------- */
+function render(){
+  const cfg = DOMAINS[state.domain];
+  const now = score(state.L, state.E, state.V, state.rhoNow, state.C);
+  const tIdx = tierIndex(now.R);
+  const invalid = tIdx === -1;
+
+  renderAssessName();
+  const inl = document.getElementById('inlineNotice');
+  if (INLINE_NOTICE){ inl.textContent = INLINE_NOTICE; inl.hidden = false; } else { inl.hidden = true; }
+  document.getElementById('scoreR').textContent = invalid ? '—' : fmt(now.R);
+  const pill = document.getElementById('tierPill');
+  pill.textContent = invalid ? 'Invalid input' : TIER_LABELS[tIdx];
+  pill.style.background = invalid ? '#8a8a8a' : TIER_COLORS[tIdx];
+  document.getElementById('actionLine').innerHTML = invalid
+    ? '<b>Invalid input</b> — check that every field is a valid number before reading a tier.'
+    : `<b>${TIER_LABELS[tIdx]} tier</b> — ${cfg.tierActions[tIdx]}`;
+
+  // scale bar: color segments go in the clipped track; markers go in the
+  // unclipped wrap (as siblings of the track) so the needle/label aren't cut off
+  const track = document.getElementById('scaleTrack');
+  const wrap = document.getElementById('scaleWrap');
+  track.innerHTML = '';
+  wrap.querySelectorAll('.marker').forEach(m=>m.remove());
+  const widths = [5,10,20,25,40]; // proportional widths for 0-.05,.05-.15,.15-.35,.35-.6,.6-1
+  widths.forEach((w,i)=>{
+    const seg = document.createElement('div');
+    seg.style.width = w+'%';
+    seg.style.background = TIER_COLORS[i];
+    track.appendChild(seg);
+  });
+  const nowMarker = document.createElement('div');
+  nowMarker.className = 'marker';
+  nowMarker.style.left = Math.min(now.R,1)*100+'%';
+  nowMarker.setAttribute('data-label','Now');
+  wrap.appendChild(nowMarker);
+
+  let after = null;
+  if (state.compare){
+    after = score(state.L, state.E, state.V, state.rhoAfter, state.C);
+    const afterMarker = document.createElement('div');
+    afterMarker.className = 'marker after-marker';
+    afterMarker.style.left = Math.min(after.R,1)*100+'%';
+    afterMarker.setAttribute('data-label','After');
+    wrap.appendChild(afterMarker);
+  }
+
+  // equation box
+  let eq = `<span class="r1">IR</span> = ${fmt(state.L,2)} · ${fmt(state.E,2)} · ${fmt(state.V,2)} = <b>${fmt(now.IR)}</b><br>`;
+  eq += `<span class="r1">R</span>  = ${fmt(now.IR)} · (1 − ${fmt(state.rhoNow,2)}) = <b>${fmt(now.R)}</b>  [${TIER_LABELS[tIdx]}]`;
+  if (state.compare){
+    const tIdxAfter = tierIndex(after.R);
+    eq += `<br><span class="r1">R after</span> = ${fmt(now.IR)} · (1 − ${fmt(state.rhoAfter,2)}) = <b>${fmt(after.R)}</b>  [${TIER_LABELS[tIdxAfter]}]`;
+  }
+  document.getElementById('eqBox').innerHTML = eq;
+
+  // EAL
+  document.getElementById('ealNow').textContent = fmt(now.EAL);
+  document.getElementById('ealNowSub').textContent = `C = ${fmt(C_VALUES[state.C-1],2)} (${cfg.cLabels[state.C-1][0]})`;
+  ealAfterBox.style.display = state.compare ? 'block' : 'none';
+  afterField.style.display = state.compare ? 'block' : 'none';
+  if (state.compare){
+    document.getElementById('ealAfter').textContent = fmt(after.EAL);
+    document.getElementById('equitySub').textContent = state.N>0
+      ? `equity: ${fmt(now.EAL/(state.N/1e6),3)} ${cfg.equityLabel}`
+      : 'equity: enter N to see the per-capita view';
+    const pct = pctReduction(state.rhoNow, state.rhoAfter);
+    const tIdxAfter = tierIndex(after.R);
+    const tierMoveTxt = tIdxAfter < tIdx ? `${TIER_LABELS[tIdx]} → ${TIER_LABELS[tIdxAfter]}` : `stays ${TIER_LABELS[tIdx]}`;
+    document.getElementById('reductionNote').innerHTML =
+      `Raising resilience from <b>${fmt(state.rhoNow,2)}</b> to <b>${fmt(state.rhoAfter,2)}</b> cuts residual risk by <b>${fmt(pct,1)}%</b> (${tierMoveTxt}).`;
+  } else {
+    document.getElementById('reductionNote').innerHTML = `Enable the comparison toggle to model ${cfg.reductionWord} and see the tier movement.`;
+  }
+}
+
+/* ---------------- Release slots in the footer ---------------- */
+(function(){
+  const v = document.getElementById('verSlot'), d = document.getElementById('doiSlot'),
+        r = document.getElementById('repoSlot'), lic = document.getElementById('licenseSlot'),
+        cite = document.getElementById('citeSlot');
+  if (v) v.textContent = RMTI_RELEASE.version;
+
+  if (r){
+    if (RMTI_RELEASE.repo){
+      const a = document.createElement('a');
+      a.href = RMTI_RELEASE.repo; a.rel = 'noopener';
+      a.textContent = RMTI_RELEASE.repo.replace(/^https?:\/\/github\.com\//, '');
+      r.appendChild(a);
+    } else { r.textContent = 'to be added'; }
+  }
+
+  if (lic){
+    if (RMTI_RELEASE.license && RMTI_RELEASE.repo){
+      const a = document.createElement('a');
+      a.href = RMTI_RELEASE.repo + '/blob/main/LICENSE'; a.rel = 'noopener';
+      a.textContent = RMTI_RELEASE.license;
+      lic.appendChild(a);
+    } else if (RMTI_RELEASE.license) {
+      lic.textContent = RMTI_RELEASE.license;
+    }
+  }
+
+  if (d){
+    if (RMTI_RELEASE.doi){
+      // Show both DOIs, the way Zenodo's own record page does: the concept
+      // DOI (always resolves to the newest version — cite this in running
+      // text) and, when known, this exact version's DOI (frozen forever —
+      // cite this to pin precisely what a reviewer evaluated).
+      const concept = document.createElement('a');
+      concept.href = 'https://doi.org/' + RMTI_RELEASE.doi; concept.rel = 'noopener';
+      concept.textContent = RMTI_RELEASE.doi;
+      d.appendChild(concept);
+      d.appendChild(document.createTextNode(' (all versions)'));
+      if (RMTI_RELEASE.versionDoi){
+        d.appendChild(document.createTextNode(' · this version: '));
+        const ver = document.createElement('a');
+        ver.href = 'https://doi.org/' + RMTI_RELEASE.versionDoi; ver.rel = 'noopener';
+        ver.textContent = RMTI_RELEASE.versionDoi;
+        d.appendChild(ver);
+      }
+    } else { d.textContent = 'DOI to be added after the first release'; }
+  }
+
+  if (cite && RMTI_RELEASE.author && RMTI_RELEASE.title){
+    // A ready-to-copy citation, matching the APA string Zenodo generates for
+    // this exact version — so a reader doesn't have to click through just to
+    // cite the tool correctly.
+    const citeDoi = RMTI_RELEASE.versionDoi || RMTI_RELEASE.doi;
+    cite.textContent = `Suggested citation: ${RMTI_RELEASE.author} (${RMTI_RELEASE.year}). ${RMTI_RELEASE.title} (Version v${RMTI_RELEASE.version}) [Computer software]. Zenodo. `;
+    if (citeDoi){
+      const a = document.createElement('a');
+      a.href = 'https://doi.org/' + citeDoi; a.rel = 'noopener';
+      a.textContent = 'https://doi.org/' + citeDoi;
+      cite.appendChild(a);
+    }
+  }
+})();
+
+/* ---------------- Oncology notice (modal + persistent banner) ---------------- */
+(function(){
+  const modal = document.getElementById('noticeModal');
+  if (!modal) return;
+  const ok = document.getElementById('noticeOk');
+  const open = document.getElementById('btn-notice');
+  let acknowledged = false;
+  function show(){ modal.hidden = false; document.body.style.overflow = 'hidden'; ok.focus(); }
+  function hide(){ modal.hidden = true; document.body.style.overflow = ''; acknowledged = true; if (open) open.focus(); }
+  ok.addEventListener('click', hide);
+  if (open) open.addEventListener('click', show);
+  document.addEventListener('keydown', function(e){
+    if (modal.hidden) return;
+    if (e.key === 'Escape' && acknowledged) hide();
+    if (e.key === 'Tab') { e.preventDefault(); ok.focus(); }   // single focusable control: keep focus inside the dialog
+  });
+  show();
+})();
+
+/* ---------------- Init ---------------- */
+[els.L, els.E, els.V, els.rho, els.rhoAfter].forEach(syncSliderFill);
+switchDomain(DEFAULT_DOMAIN);
+</script>
+</body>
+</html>

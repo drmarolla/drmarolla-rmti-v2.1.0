@@ -1,110 +1,125 @@
-# Deployment & Upload Instructions (v2.1.0 Release Workflow)
+# Upload checklist — v2.1.0 (oncology release, revised)
 
-This document outlines the step-by-step workflow for deploying version **v2.1.0** from this staging workspace across your three public GitHub repositories and updating their associated Zenodo records.
+**Revised:** all three components are now v2.1.0 (the disaster sandbox was bumped from 2.0.0), the
+Python repository is expected under the `drmarolla` GitHub account, and the Zenodo
+descriptions match the 37-test suite.
 
----
+Three separate GitHub repos, three separate Zenodo records. Do them in
+any order; none depend on each other. ~10 minutes each if you're just
+replacing files through the GitHub web UI; faster with git.
 
-## 🛠️ Step 1: Deploy to `rmti-disaster-science-sandbox`
-
-### 1.1 Local Workspace Preparation
-Open your terminal and navigate to the directory containing your local clone of the disaster sandbox:
-```bash
-cd /path/to/rmti-disaster-science-sandbox
-```
-
-### 1.2 Sync Staging Changes
-Copy the updated files from your staging folder `disaster-science-sandbox/` into this repository. Ensure the following version updates are reflected:
-* `index.html` (Version bumped to 2.1.0, Apache 2.0 footer verified)
-* `README.md` (Citation updated with the corrected disaster DOI: `10.5281/zenodo.22909081`)
-* `CITATION.cff` and `.zenodo.json` (Bumped to 2.1.0)
-* Root `LICENSE` and `NOTICE` files present.
-
-### 1.3 Push to GitHub
-```bash
-git add .
-git commit -m "Release v2.1.0: Bump version, correct citation DOI, and enforce Apache 2.0"
-git branch -M main
-git push origin main
-```
-
-### 1.4 Tag the Release
-```bash
-git tag -a v2.1.0 -m "Disaster Sandbox Oncology Release v2.1.0"
-git push origin v2.1.0
-```
+For each repo: **delete the old file and upload the new one with the same
+name** (don't rename), so git shows a clean diff instead of an add+delete.
 
 ---
 
-## 🔬 Step 2: Deploy to `rmti-oncology-sandbox`
+## 1. Disaster-science sandbox
+`github.com/drmarolla/rmti-disaster-science-sandbox`
 
-### 2.1 Local Workspace Preparation
-```bash
-cd /path/to/rmti-oncology-sandbox
-```
+**Copy in, replacing the existing file of the same name:**
+- `disaster-science-sandbox/index.html`
+- `disaster-science-sandbox/LICENSE`
+- `disaster-science-sandbox/.zenodo.json`
+- `disaster-science-sandbox/CITATION.cff`
 
-### 2.2 Sync Staging Changes
-Copy the updated files from the staging folder `oncology-sandbox/` into this repository. Ensure:
-* `index.html` reflects the new vocabulary terms (`HCC_TIER_POSTURE`, "planned surveillance improvement").
-* Unified population bounds (N from 100 to 5,000,000) and EAL per 1,000,000 metrics are implemented.
-* `CITATION.cff` and `.zenodo.json` are updated to 2.1.0.
+**Add as new files:**
+- `disaster-science-sandbox/NOTICE`
 
-### 2.3 Push and Tag
-```bash
-git add .
-git commit -m "Release v2.1.0: Standardize oncology vocabulary, population bounds, and metrics"
-git branch -M main
-git push origin main
+**Review before committing (I wrote these from scratch, not from your
+current file — merge in anything of yours you want to keep, like
+screenshots):**
+- `disaster-science-sandbox/README.md`
 
-git tag -a v2.1.0 -m "Oncology Sandbox Release v2.1.0"
-git push origin v2.1.0
-```
+**Leave alone:** anything else already in the repo I haven't mentioned.
 
----
-
-## 🐍 Step 3: Deploy to `Risk-Mechanism-Theory-Index-RMTI-` (Python Package)
-
-### 3.1 Local Workspace Preparation
-```bash
-cd /path/to/Risk-Mechanism-Theory-Index-RMTI-
-```
-
-### 3.2 Sync Staging Changes
-Copy the files from the staging folder `rmti-python/` into this repository. Double-check that:
-* The test suite contains all 37 passing assertions (29 baseline + 8 new oncology module assertions).
-* All updated `.py` source files include the Apache 2.0 copyright header.
-* `CHANGELOG.md` accurately documents the floating-point rounding fixes, sorting bug corrections, and the wildfire case data synchronization.
-
-### 3.3 Verify Tests Locally
-Always run your test runner before pushing to guarantee nothing broke during the file migration:
-```bash
-pytest
-```
-
-### 3.4 Push and Tag
-```bash
-git add .
-git commit -m "Release v2.1.0: Implement HCC module, expand test suite to 37, and fix edge-case bugs"
-git branch -M main
-git push origin main
-
-git tag -a v2.1.0 -m "Python Reference Implementation Release v2.1.0"
-git push origin v2.1.0
-```
+**Then:** commit → tag `v2.1.0` (the disaster sandbox metadata now says 2.1.0 too) → push → create a GitHub Release from that
+tag. If the Zenodo webhook is already connected, it archives automatically
+as a new version under concept DOI `10.5281/zenodo.22909081`. **Check the
+Zenodo draft before publishing** — the `.zenodo.json` should have primed
+the license as Apache-2.0, but confirm the dropdown actually shows
+"Apache License 2.0" and not the old MIT before you hit Publish.
 
 ---
 
-## 📜 Step 4: Publish GitHub Releases & Sync Zenodo
+## 2. Oncology sandbox
+`github.com/drmarolla/rmti-oncology-sandbox`
 
-For each of the three repositories above, complete the final publishing steps on the web interface:
+Same steps as above, using the `oncology-sandbox/` folder instead. Concept
+DOI: `10.5281/zenodo.22909090`.
 
-1. **Navigate to the Repository on GitHub.**
-2. **Open the Releases Sidebar:** On the right side of the main page, click **Releases** -> **Draft a new release**.
-3. **Select the Tag:** Choose the `v2.1.0` tag you just pushed via the command line.
-4. **Generate Release Notes:** Click the **Generate release notes** button to automatically pull commit headlines.
-5. **Publish:** Click **Publish release**.
-6. **Zenodo Automation:** If your GitHub account is linked to Zenodo, publishing these releases will automatically trigger a webhook to mint your permanent v2.1.0 DOIs using the metadata provided in your `.zenodo.json` files.
+One thing specific to this repo: **`DISCLAIMER.md` already exists there
+and I haven't touched it** — I don't have its current content, so I
+didn't try to guess and overwrite it. Leave it as-is; the in-app modal
+already links to it.
 
 ---
 
-## 📊 External Assets Note
-The contents of **`RMTI_Calculator/`** (`RMTI_HCC_Calculator_v2.1.0.xlsx`) and **`docs/`** are intended for your self-hosted landing page or external documentation hub. Ensure these are uploaded alongside your release notifications so users can download the verified Excel tools.
+## 3. Python reference implementation
+`github.com/drmarolla/Risk-Mechanism-Theory-Index-RMTI-`
+
+**Account move.** The repo previously lived under a different GitHub account. Zenodo's
+GitHub link only sees repos of the account you connect (`drmarolla`), so either
+(a) on the old repo go to Settings → Danger Zone → *Transfer ownership* → `drmarolla`
+(keep the name; GitHub redirects the old URL), or (b) create the repo under `drmarolla`
+and push the files there. Then switch it ON at zenodo.org → Account → GitHub → Sync now.
+If you would rather not use the webhook, upload the release by hand: open the Zenodo record
+(concept DOI `10.5281/zenodo.21445892`) → *New version* → upload `rmti-framework-v2.1.0.zip`.
+On the new version set **Access = Open**, confirm license = Apache License 2.0, and check the
+resource type (the v1.0.0 record is 'Software documentation'; `.zenodo.json` says 'software').
+
+Replace the **entire repository contents** with everything in
+`rmti-python/` (or use the standalone `rmti-framework-v2.1.0.zip` I gave
+you separately — same contents). Then: commit → tag `v2.1.0` → push →
+GitHub Release → Zenodo new version under concept DOI
+`10.5281/zenodo.21445892`.
+
+Run the test suite once before you push, just to see it pass on your own
+machine, not just mine:
+```
+cd rmti-python
+python -m unittest tests.test_rmti -v
+```
+Expect: `Ran 37 tests ... OK`.
+
+---
+
+## 4. RMTI Calculator
+
+Not on GitHub/Zenodo — just replace wherever you currently host or share
+the urban workbook with `RMTI_Calculator/RMTI_Calculator_v2.0.0.xlsx` (unchanged), and
+share the new oncology workbook `RMTI_Calculator/RMTI_HCC_Calculator_v2.1.0.xlsx`
+alongside it. The Word explainer is `docs/RMTI_Calculator_Explainer_v2.1.0.docx`.
+If you'd like this archived with its own DOI too (as a Zenodo "software"
+or "dataset" upload, or as a supplementary file attached to one of the
+two sandbox records), that's a separate, new decision — say the word and
+I'll help you set it up, but I didn't do it here since nothing in this
+conversation established an existing repo or DOI for it.
+
+---
+
+## Note on versions
+
+If v2.0.0 has **not** been uploaded yet, publish this folder as the release
+instead (skip v2.0.0). If v2.0.0 is already live, v2.1.0 is a new version under
+the same concept DOIs. Also: the archived Zenodo record 21445893 is v1.0.0;
+the preprint's "version 1.1.0" was never published, so update the manuscript's
+Code availability to cite the concept DOI 10.5281/zenodo.21445892 (or the
+v2.1.0 version DOI once Zenodo assigns it).
+
+---
+
+## After all three are live: one loose end
+
+Both sandboxes' `index.html` currently ship with an **empty**
+`versionDoi` field (search for `TODO` in the `<script>` block). Zenodo
+assigns that number at upload time, so it couldn't be known in advance.
+Once each Zenodo upload finishes:
+
+1. Copy the new version-specific DOI Zenodo gives you (something like
+   `10.5281/zenodo.229090XX`).
+2. Paste it into `RMTI_RELEASE.versionDoi` in that sandbox's `index.html`.
+3. Commit that one-line change (no new release/tag needed for this — it's
+   just filling in a number the file was already built to display).
+
+Until you do this, the footer will just show the concept DOI without a
+"this version:" line — not wrong, just incomplete.

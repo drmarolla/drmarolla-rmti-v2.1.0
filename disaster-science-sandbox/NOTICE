@@ -1,0 +1,24 @@
+RMTI Sandbox — Disaster Science
+Copyright 2026 Cesar Marolla
+
+This product includes software originally developed by Cesar Marolla
+(ORCID: https://orcid.org/0000-0001-8498-7380), an interactive reference
+implementation of the Risk Mechanism Theory Index (RMTI) for urban,
+infrastructure and disaster-risk assessment, developed for ENVR E-241
+"Risk by Design," Harvard University, Division of Continuing Education.
+
+Companion Python reference implementation:
+  https://github.com/drmarolla/Risk-Mechanism-Theory-Index-RMTI-
+  Concept DOI: https://doi.org/10.5281/zenodo.21445892
+
+Software citation: see CITATION.cff. Concept DOI for this sandbox (always
+resolves to the latest release): https://doi.org/10.5281/zenodo.22909081
+
+Educational and research use only. An independent academic tool; not an
+official product of the World Bank Group or any other institution. Scores
+are relative, rubric-based indices, not forecasts, engineering assessments,
+or actuarial figures.
+
+Licensed under the Apache License, Version 2.0 (see LICENSE). This NOTICE
+file is provided for informational and attribution purposes per Apache
+License 2.0 Section 4(d); it does not itself modify the License.

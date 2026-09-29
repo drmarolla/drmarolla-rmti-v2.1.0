@@ -1,23 +1,26 @@
-Marolla's Risk Mechanism Theory Index (RMTI) Framework
-Copyright 2026 Dr. Cesar Marolla (ORCID: 0000-0001-8498-7380).
+RMTI: Risk Mechanism Theory Index — Complete Project
+Copyright 2026 Cesar Marolla
 
-This product includes software developed by Dr. Cesar Marolla
-(https://github.com).
+This work — the Python reference implementation, the RMTI Calculator
+spreadsheet, and both interactive sandboxes (oncology/public-health
+surveillance and disaster/climate) — was created by Cesar Marolla
+(ORCID: https://orcid.org/0000-0001-8498-7380), first developed for
+ENVR E-241 "Risk by Design," Harvard University, Division of Continuing
+Education.
 
-=========================================================================
-Trademarks and Attribution Notices
-=========================================================================
-The Risk Mechanism Theory Index (RMTI) formulation:
-  R = L · E · V · (1 - ρ)
-  EAL = L · C · (1 - ρ)
-and associated evaluation matrices, rubrics, and simulation vocabulary 
-are attributed directly to the copyright owner named above.
+Component registrations:
+  - Python reference implementation: github.com/drmarolla/Risk-Mechanism-Theory-Index-RMTI-
+    Concept DOI: https://doi.org/10.5281/zenodo.21445892
+  - Oncology sandbox: github.com/drmarolla/rmti-oncology-sandbox
+    Concept DOI: https://doi.org/10.5281/zenodo.22909090
+  - Disaster-science sandbox: github.com/drmarolla/rmti-disaster-science-sandbox
+    Concept DOI: https://doi.org/10.5281/zenodo.22909081
 
-=========================================================================
-Historical Licensing Transition Note
-=========================================================================
-Portions of this software framework (specifically previous development 
-iterations of the web sandboxes) were originally distributed under the 
-MIT License. All modifications, architectural updates, and new features 
-introduced in version 2.0.0 and forward are licensed under the Apache 
-License, Version 2.0.
+See each component's own NOTICE and CITATION.cff for full citation detail.
+
+Licensed under the Apache License, Version 2.0 (see LICENSE) — this
+governs every file in this folder, with no exceptions: code, rubric text,
+tier descriptions, worked examples, and the calculator's UI copy alike.
+This NOTICE file is provided for informational and attribution purposes
+per Apache License 2.0 Section 4(d); it does not itself modify the
+License.
