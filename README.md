@@ -1,4 +1,5 @@
-# Marolla's RMTI — Disaster Science and Oncology
+# Marolla's RMTI — Disaster Science and Oncology. 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23031912.svg)](https://doi.org/10.5281/zenodo.23031912)
 
 **Version 2.1.0 (revised package).** The Risk Mechanism Theory Index (RMTI) provides a single, decision-ready risk score:
 
