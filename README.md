@@ -1,6 +1,7 @@
 # Marolla's RMTI — Disaster Science and Oncology. 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23031912.svg)](https://doi.org/10.5281/zenodo.23031912)
-
+## How to cite
+Marolla, Cesar. (2026). *Marolla's RMTI Framework v2.1.0*. Zenodo. https://doi.org/10.5281/zenodo.23031912
 **Version 2.1.0 (revised package).** The Risk Mechanism Theory Index (RMTI) provides a single, decision-ready risk score:
 
 R = L x E x V x (1 - p)
