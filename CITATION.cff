@@ -1,11 +1,11 @@
-cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
-title: "Marolla's RMTI Framework"
-version: "2.1.0"
-doi: 10.5281/zenodo.23031912
-date-released: 2026-MM-DD
-license: Apache-2.0
-authors:
-  - family-names: "Marolla"
-    given-names: "[First name]"
-    orcid: "https://orcid.org/0000-0001-8498-7380"
+@software{marolla_rmti_2026,
+  author       = {Marolla, Cesar},
+  title        = {drmarolla/drmarolla-rmti-v2.1.0: Marolla's RMTI Framework v2.1.0},
+  month        = sep,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v2.1.0},
+  doi          = {10.5281/zenodo.23031912},
+  url          = {https://doi.org}
+}
+
